@@ -24,7 +24,7 @@ def calculate_mean_sd(data):
 
     return result
 
-def preprocess_data(data, mean_sd_dict, num_sd=2):
+def preprocess_data(data, mean_sd_dict, num_sd=1):
     filtered_data = []
 
     for row in data:
@@ -34,9 +34,16 @@ def preprocess_data(data, mean_sd_dict, num_sd=2):
         class_mean = mean_sd_dict[iris_class]['mean']
         class_sd = mean_sd_dict[iris_class]['sd']
 
-        # Check if the features fall within mean ± num_sd * sd range
-        if np.all(np.abs(features - class_mean) <= num_sd * class_sd):
-            filtered_data.append(row)
+        # Preprocess the data based on mean ± num_sd * sd
+        condition = np.logical_and(features >= class_mean - num_sd * class_sd,
+                                   features <= class_mean + num_sd * class_sd)
+
+        # Replace values based on the conditions
+        result = np.where(condition, 'M', 'S')
+        result = np.where(features > class_mean + num_sd * class_sd, 'L', result)
+
+        # Append the row to filtered_data
+        filtered_data.append(np.append(result, iris_class))
 
     return np.array(filtered_data)
 
@@ -57,9 +64,24 @@ mean_sd_dict = calculate_mean_sd(data_with_header[1:])
 # Preprocess data by filtering out points outside mean ± 2 * sd range for each class
 preprocessed_data = preprocess_data(data_with_header[1:], mean_sd_dict, num_sd=2)
 
-# Write preprocessed data to CSV file with fixed-width spacing and header
-np.savetxt('preprocessed_iris.txt', preprocessed_data, fmt='%-15s %-15s %-15s %-15s %s', delimiter=' ', header=header)
+# Define the output CSV file name
+output_csv_file = 'preprocessed_iris.csv'
 
-print("Preprocessed data has been written to 'preprocessed_iris.txt'.")
+# Write preprocessed data to CSV file
+with open(output_csv_file, 'w', newline='') as csvfile:
+    csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
+    # Write header
+    csvwriter.writerow(header.split())
 
+    # Write preprocessed data
+    for row in preprocessed_data:
+        csvwriter.writerow(row)
+
+print(f"Preprocessed data has been written to '{output_csv_file}'.")
+
+# Write preprocessed data to TXT file with fixed-width spacing and header
+output_txt_file = 'preprocessed_iris.txt'
+np.savetxt(output_txt_file, preprocessed_data, fmt='%s %s %s %s %s', delimiter=' ', header=header)
+
+print(f"Preprocessed data has been written to '{output_txt_file}'.")

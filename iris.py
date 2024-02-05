@@ -1,85 +1,246 @@
-from Dtreefunc import *  # Import your decision tree functions
+from scipy import linalg
+import numpy as np
+from numpy import loadtxt
+import math
+from Dtreefunc import *
 
-# Load the Iris dataset
-f = open("iris.txt", "r")
-
+f = open("preprocessed_iris.txt", "r")
 X = f.readlines()
 
-# Prepare space to store calculation results separated by class
-L = 3  # Number of classes
-N = 4  # Number of features
-M = 3  # Number of rows
+# เตรียม พื้นที่เพื่อเก็บผลการคำนวณแยกตาม class
+N = 3  # col(3 class)
+M = 3  # row
 
-sepal_length = np.zeros(3)
-sepal_length_CI = [[0 for i in range(M)] for j in range(N)]
+sl = np.zeros(3)
+slCI = [[0 for i in range(M)] for j in range(N)]
 
-sepal_width = np.zeros(3)
-sepal_width_CI = [[0 for i in range(M)] for j in range(N)]
+sw = np.zeros(3)
+swCI = [[0 for i in range(M)] for j in range(N)]
 
-petal_length = np.zeros(3)
-petal_length_CI = [[0 for i in range(M)] for j in range(N)]
+pl = np.zeros(3)
+plCI = [[0 for i in range(M)] for j in range(N)]
 
-petal_width = np.zeros(3)
-petal_width_CI = [[0 for i in range(M)] for j in range(N)]
+pw = np.zeros(3)
+pwCI = [[0 for i in range(M)] for j in range(N)]
 
-iris_class = np.zeros(3)
-iris_class_CI = [[0 for i in range(M)] for j in range(L)]
+classs = np.zeros(3)
 
-# Loop to count data based on features and class
-for i in range(0, len(X)):
-    if "Iris-setosa" in X[i]:
-        iris_class[0] += 1
-        if "Iris-setosa" in X[i]:
-            iris_class_CI[0][0] += 1  # class setosa
+# วน loop เพื่อนับข้อมูล แยกตามรายละเอียด attb และ class
+for i in range(0, 15):
+    if X[i].count("S") == 1:
+        sl[0] += 1  
+        if ((X[i].count("S") == 1)) and (X[i].count("Iris-setosa") == 1):
+            slCI[0][0] += 1  
+        elif ((X[i].count("S") == 1)) and (X[i].count("Iris-versicolor") == 1):
+            slCI[0][1] += 1
+        elif ((X[i].count("S") == 1)) and (X[i].count("IIris-virginica") == 1):
+            slCI[0][2] += 1
+    elif X[i].count("M") == 1:
+        sl[1] += 1
+        if ((X[i].count("M") == 1)) and (X[i].count("Iris-setosa") == 1):
+            slCI[0][0] += 1  
+        elif ((X[i].count("M") == 1)) and (X[i].count("Iris-versicolor") == 1):
+            slCI[0][1] += 1
+        elif ((X[i].count("M") == 1)) and (X[i].count("IIris-virginica") == 1):
+            slCI[0][2] += 1
+    elif X[i].count("L") == 1:
+        sl[2] += 1
+        if ((X[i].count("L") == 1)) and (X[i].count("Iris-setosa") == 1):
+            slCI[0][0] += 1  
+        elif ((X[i].count("L") == 1)) and (X[i].count("Iris-versicolor") == 1):
+            slCI[0][1] += 1
+        elif ((X[i].count("L") == 1)) and (X[i].count("IIris-virginica") == 1):
+            slCI[0][2] += 1
+
+    if X[i].count("low") == 1:
+        pl[0] += 1
+        if ((X[i].count("S") == 1)) and (X[i].count("No") == 1):
+            plCI[0][0] += 1  # class no
         else:
-            iris_class_CI[0][1] += 1  # other classes
-    elif "Iris-versicolor" in X[i]:
-        iris_class[1] += 1
-        if "Iris-versicolor" in X[i]:
-            iris_class_CI[1][0] += 1  # class versicolor
+            plCI[0][1] += 1  # class yes
+    elif X[i].count("medium") == 1:
+        pl[1] += 1
+        if ((X[i].count("medium") == 1)) and (X[i].count("No") == 1):
+            plCI[1][0] += 1
         else:
-            iris_class_CI[1][1] += 1  # other classes
-    elif "Iris-virginica" in X[i]:
-        iris_class[2] += 1
-        if "Iris-virginica" in X[i]:
-            iris_class_CI[2][0] += 1  # class virginica
+            plCI[1][1] += 1
+    elif X[i].count("high") == 1:
+        pl[2] += 1
+        if ((X[i].count("high") == 1)) and (X[i].count("No") == 1):
+            plCI[2][0] += 1
         else:
-            iris_class_CI[2][1] += 1  # other classes
+            plCI[2][1] += 1
 
-    # Additional code for sepal_length, sepal_width, petal_length, petal_width
+    if X[i].count("s_no") == 1:
+        sw[0] += 1
+        if ((X[i].count("s_no") == 1)) and (X[i].count("No") == 1):
+            swCI[0][0] += 1  # class no
+        else:
+            swCI[0][1] += 1  # class yes
+    elif X[i].count("s_yes") == 1:
+        sw[1] += 1
+        if ((X[i].count("s_yes") == 1)) and (X[i].count("No") == 1):
+            swCI[1][0] += 1
+        else:
+            swCI[1][1] += 1
 
-# Calculate information gain of dataset and attributes
-# info D, sepal_length, sepal_width, petal_length, petal_width
-info = np.zeros(5)
-InD = entropy(iris_class[0], iris_class[1], iris_class[2])
+    if X[i].count("fair") == 1:
+        pw[0] += 1
+        if ((X[i].count("fair") == 1)) and (X[i].count("No") == 1):
+            pwCI[0][0] += 1  # class no
+        else:
+            pwCI[0][1] += 1  # class yes
+    elif X[i].count("excellent") == 1:
+        pw[1] += 1
+        if ((X[i].count("excellent") == 1)) and (X[i].count("No") == 1):
+            pwCI[1][0] += 1
+        else:
+            pwCI[1][1] += 1
 
-sepal_length_CI[0][2] = entropy(sepal_length_CI[0][0], sepal_length_CI[0][1])
-sepal_width_CI[0][2] = entropy(sepal_width_CI[0][0], sepal_width_CI[0][1])
-petal_length_CI[0][2] = entropy(petal_length_CI[0][0], petal_length_CI[0][1])
-petal_width_CI[0][2] = entropy(petal_width_CI[0][0], petal_width_CI[0][1])
+    if X[i].count("Iris-setosa") == 1:
+        classs[0] += 1
+    elif X[i].count("Iris-versicolor") == 1:
+        classs[1] += 1
+    elif X[i].count("Iris-virginica") == 1:
+        classs[2] += 1
 
-# Additional code for calculating information gain of other features
 
-Info_sepal_length_D = inforD(sepal_length, [sepal_length_CI[0][2], sepal_length_CI[1][2], sepal_length_CI[2][2]])
-Info_sepal_width_D = inforD(sepal_width, [sepal_width_CI[0][2], sepal_width_CI[1][2], sepal_width_CI[2][2]])
-Info_petal_length_D = inforD(petal_length, [petal_length_CI[0][2], petal_length_CI[1][2], petal_length_CI[2][2]])
-Info_petal_width_D = inforD(petal_width, [petal_width_CI[0][2], petal_width_CI[1][2], petal_width_CI[2][2]])
+# calculate information gain of dataset and attb
+# info D,sl,pl,sw,pw
+    info_d = calculate_entropy(classs)
 
-# Additional code for calculating information gain of other features
+    for i in range(3):
+        slCI[i][3] = calculate_entropy(
+            [slCI[i][0], slCI[i][1], slCI[i][2]])
+        swCI[i][3] = calculate_entropy(
+            [swCI[i][0], swCI[i][1], swCI[i][2]])
+        plCI[i][3] = calculate_entropy(
+            [plCI[i][0], plCI[i][1], plCI[i][2]])
+        pwCI[i][3] = calculate_entropy(
+            [pwCI[i][0], pwCI[i][1], pwCI[i][2]])
 
+# หาค่า gain แบบไม่ใช้ และใช้ฟังก์ชัน
+"""
+การหาแบบไม่ใช้ฟังก์ชัน
+Info_slD = ((sl[0]/14)*slCI[0][2])+((sl[1]/14)*slCI[1][2])+((sl[2]/14)*slCI[2][2])
+print("InfoD sl is",Info_slD)
+print("sl Ci [:],[2] is",[slCI[0][2],slCI[1][2],slCI[2][2]])
+print("InfoD sl is",Info_slD)
+"""
+Info_slD = inforD(sl, [slCI[0][2], slCI[1][2], slCI[2][2]])
+Info_plD = inforD(pl, [plCI[0][2], plCI[1][2], plCI[2][2]])
+Info_swD = inforD(sw, [swCI[0][2], swCI[1][2]])
+Info_pwD = inforD(pw, [pwCI[0][2], pwCI[1][2]])
+
+# แสดงผลการทำงานรอบแรก
+"""
+print("sl count is", sl)
+print("pl count is",pl)
+print("swdent count is",sw)
+print("pw rating count is",pw)
+print("Buy computer count is",buy)
+print("sl Info relate to class",slCI)
+print("pl Info relate to class",plCI)
+print("swdent Info relate to class",swCI)
+print("pw rating Info relate to class",pwCI)
+
+print("Info(D) is %5.3f" % InD)
+print("Info(sl S(2,3) is %5.3f" % slCI[0][2])
+print("Info(sl 31...40(4,0) is %5.3f" % slCI[1][2])
+print("Info(sl >40 (3,2) is %5.3f" % slCI[2][2])
+
+print("Info(pl low(1,3) is %5.3f" % plCI[0][2])
+print("Info(pl medium(2,4) is %5.3f" % plCI[1][2])
+print("Info(pl high(2,2) is %5.3f" % plCI[2][2])
+
+print("Info(swdent No (4,3) is %5.3f" % swCI[0][2])
+print("Info(swdent Yes (1,6) is %5.3f" % swCI[1][2])
+
+print("Info(pw fair(2,6) is %5.3f" % pwCI[0][2])
+print("Info(pw excellent(3,3) is %5.3f" % pwCI[1][2])
+print("Info sl (D) is %5.3f" % Info_slD)
+print("Info pl (D) is %5.3f" % Info_plD)
+print("Info swdent (D) is %5.3f" % Info_swdentD)
+print("Info pw rating (D) is %5.3f" % Info_pwD)
+"""
 print("\n***Gain results of all dataset***")
-gainSepalLength = InD - Info_sepal_length_D
-print("Gain (Sepal Length) is %5.3f" % gainSepalLength)
-gainSepalWidth = InD - Info_sepal_width_D
-print("Gain (Sepal Width) is %5.3f" % gainSepalWidth)
-gainPetalLength = InD - Info_petal_length_D
-print("Gain (Petal Length) is %5.3f" % gainPetalLength)
-gainPetalWidth = InD - Info_petal_width_D
-print("Gain (Petal Width) is %5.3f" % gainPetalWidth)
+gainsl = InD - Info_slD
+print("Gain (sl) is %5.3f" % gainsl)
+gainIn = InD - Info_plD
+print("Gain (pl) is %5.3f" % gainIn)
+gainsw = InD - Info_swdentD
+print("Gain (swdent) is %5.3f" % gainsw)
+gainCre = InD - Info_pwD
+print("Gain (pw rating) is %5.3f" % gainCre)
 
 # rule of root node
 
-Result_All = [gainSepalLength, gainSepalWidth, gainPetalLength, gainPetalWidth]
+Result_All = [gainsl, gainIn, gainsw, gainCre]
 max_gain = max(Result_All)
 pos = np.argmax(Result_All)
-print("max gain of attribute is %5.3f" % max_gain, "position is", pos)
+print("max gain of attb is %5.3f" % max_gain, "position is", pos)
+
+# วน loop แยก dataset ตาม attb sl
+X2L = []  # ข้อมูลสำหรับสร้าง level 2 ที่ sl S
+X2M = []  # ข้อมูลสำหรับสร้าง level 2 ที่ sl M
+X2R = []  # ข้อมูลสำหรับสร้าง level 2 ที่ sl L
+f1 = open("buycomL2left.txt", "w")
+f2 = open("buycomL2middle.txt", "w")
+f3 = open("buycomL2right.txt", "w")
+
+for i in range(0, 15):
+    if X[i].count("S") == 1:
+        f1.write(str(X[i]))
+
+    elif X[i].count("M") == 1:
+        f2.write(str(X[i]))
+
+    elif X[i].count("L") == 1:
+        f3.write(str(X[i]))
+
+# dataset of layer 2 of dtree generate
+f1 = open("buycomL2left.txt", "r")
+f2 = open("buycomL2middle.txt", "r")
+f3 = open("buycomL2right.txt", "r")
+X2L = f1.readlines()
+X2M = f2.readlines()
+X2R = f3.readlines()
+
+
+# recursive line 14 สำหรับการสร้าง tree ชั้นที่ 2 สำหรับ dataset slS
+
+
+# วน loop เพื่อนับข้อมูล แยกตามรายละเอียด attb และ class
+# data ที่ sl S
+
+
+# calculate information gain of dataset and attb
+# info D,sl,pl,sw,pw
+
+
+# หาค่า gain แบบใช้ฟังก์ชัน
+
+
+# แสดงผลการทำงาน รอบ2 ฝั่งซ้าย
+
+
+# recursive line 14 สำหรับการสร้าง tree ชั้นที่ 2 สำหรับ dataset sl>40
+
+
+# วน loop เพื่อนับข้อมูล แยกตามรายละเอียด attb และ class
+# data ที่ sl >40
+
+
+# calculate information gain of dataset and attb
+# info D,sl,pl,sw,pw
+
+
+# หาค่า gain แบบใช้ฟังก์ชัน
+
+
+# แสดงผลการทำงานรอบสอง ฝั่งขวา
+
+
+# สร้าง tree
+# rule extraction
+# model evaluation
