@@ -14,29 +14,21 @@ def entropy(x,y):
         return(out)
 
 
-# def entropy3(x, y, z):
-#     """
-#     Expected information for three variables
-#     Info(D) = -sum(pi)log2(pi)
-#     """
-#     total = x + y + z
-#     if x == 0 or y == 0 or z == 0:
-#         return 0
-#     else:
-#         out = (
-#             (-x / total) * math.log((x / total), 2) +
-#             (-y / total) * math.log((y / total), 2) +
-#             (-z / total) * math.log((z / total), 2)
-#         )
-#         return out
-    
-def calculate_entropy(subset):
-    subset_size = len(subset)
-    if subset_size == 0:
+def calculate_entropy(x, y, z):
+    """
+    Expected information for three variables
+    Info(D) = -sum(pi)log2(pi)
+    """
+    total = x + y + z
+    if x == 0 or y == 0 or z == 0:
         return 0
-    entropy = -sum((subset['class'].value_counts() / subset_size) * 
-                   np.log2(subset['class'].value_counts() / subset_size))
-    return entropy
+    else:
+        out = (
+            (-x / total) * math.log((x / total), 2) +
+            (-y / total) * math.log((y / total), 2) +
+            (-z / total) * math.log((z / total), 2)
+        )
+        return out
 
 
 def inforD(m,n): 
