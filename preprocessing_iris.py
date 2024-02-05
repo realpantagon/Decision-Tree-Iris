@@ -9,6 +9,8 @@ def calculate_mean_sd(data):
         class_data = data[data[:, -1] == iris_class, :-1].astype(float)
         class_mean = np.mean(class_data, axis=0)
         class_sd = np.std(class_data, axis=0)
+        class_min = np.min(class_data, axis=0)
+        class_max = np.max(class_data, axis=0)
 
         result[iris_class] = {'mean': class_mean, 'sd': class_sd}
 
@@ -16,6 +18,8 @@ def calculate_mean_sd(data):
         print(f"Iris Class: {iris_class}")
         print(f"Mean: {class_mean}")
         print(f"Standard Deviation: {class_sd}")
+        print(f"Minimum: {class_min}")
+        print(f"Maximum: {class_max}")
         print()
 
     return result
@@ -54,8 +58,8 @@ mean_sd_dict = calculate_mean_sd(data_with_header[1:])
 preprocessed_data = preprocess_data(data_with_header[1:], mean_sd_dict, num_sd=2)
 
 # Write preprocessed data to CSV file with fixed-width spacing and header
-np.savetxt('preprocessed_iris.csv', preprocessed_data, fmt='%-15s %-15s %-15s %-15s %s', delimiter=' ', header=header)
+np.savetxt('preprocessed_iris.txt', preprocessed_data, fmt='%-15s %-15s %-15s %-15s %s', delimiter=' ', header=header)
 
-print("Preprocessed data has been written to 'preprocessed_iris.csv'.")
+print("Preprocessed data has been written to 'preprocessed_iris.txt'.")
 
 
