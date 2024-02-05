@@ -82,6 +82,7 @@ print(f"Preprocessed data has been written to '{output_csv_file}'.")
 
 # Write preprocessed data to TXT file with fixed-width spacing and header
 output_txt_file = 'preprocessed_iris.txt'
+
 np.savetxt(output_txt_file, preprocessed_data, fmt='%s %s %s %s %s', delimiter=' ', header=header)
 
 print(f"Preprocessed data has been written to '{output_txt_file}'.")
