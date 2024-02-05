@@ -29,6 +29,14 @@ def entropy3(x, y, z):
             (-z / total) * math.log((z / total), 2)
         )
         return out
+    
+# def calculate_entropy(subset):
+#     subset_size = len(subset)
+#     if subset_size == 0:
+#         return 0
+#     entropy = -sum((subset['class'].value_counts() / subset_size) * 
+#                    np.log2(subset['class'].value_counts() / subset_size))
+#     return entropy
 
 
 def inforD(m,n): 
