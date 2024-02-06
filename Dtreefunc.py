@@ -14,20 +14,14 @@ def entropy(x,y):
         return(out)
 
 
-def calculate_entropy(x, y, z):
-    """
-    Expected information for three variables
-    Info(D) = -sum(pi)log2(pi)
-    """
-    total = x + y + z
-    if x == 0 or y == 0 or z == 0:
+def calculate_entropy(data):
+    size = len(data)
+    if any(element == 0 for element in data):
         return 0
     else:
-        out = (
-            (-x / total) * math.log((x / total), 2) +
-            (-y / total) * math.log((y / total), 2) +
-            (-z / total) * math.log((z / total), 2)
-        )
+        out = 0
+        for i in range(size):
+            out += (-data[i] / np.sum(data)) * math.log((data[i] / np.sum(data)), 2)
         return out
 
 
