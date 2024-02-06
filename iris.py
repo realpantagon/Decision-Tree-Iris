@@ -372,12 +372,12 @@ def iristhirdgain():
     print("Entropy of 1st Dataset = " , info_d)
 
     for i in range(3):
-        slCI[i][3] = calculate_entropy([slCI[i][0], slCI[i][1]])
-        swCI[i][3] = calculate_entropy([swCI[i][0], swCI[i][1]])
+        slCI[i][2] = calculate_entropy([slCI[i][0], slCI[i][1]])
+        swCI[i][2] = calculate_entropy([swCI[i][0], swCI[i][1]])
 
     # Calculate information gain for each attribute
-    Info_sl_D = inforD(sl, [slCI[0][3], slCI[1][3], slCI[2][3]])
-    Info_sw_D = inforD(sw, [swCI[0][3], swCI[1][3], swCI[2][3]])
+    Info_sl_D = inforD(sl, [slCI[0][2], slCI[1][2], slCI[2][2]])
+    Info_sw_D = inforD(sw, [swCI[0][2], swCI[1][2], swCI[2][2]])
 
     # Calculate information gain for each attribute
 
