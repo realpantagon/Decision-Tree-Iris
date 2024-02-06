@@ -196,7 +196,7 @@ def irissecondgain():
 
     classs = np.zeros(2)
     # Loop through the data to count occurrences
-    for i in range(0, 150):
+    for i in range(50, 150):
 
         # Sepal Length (sl)
         print(f"Processing line {i}: {X[i]}")
