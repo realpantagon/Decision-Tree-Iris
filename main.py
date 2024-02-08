@@ -4,5 +4,5 @@ from classification import *
 # irisfirststgain()
 # irissecondgain()
 # iristhirdgain()
-# irisfourthgain()
-classification()
+irisfourthgain()
+# classification()

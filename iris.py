@@ -162,9 +162,9 @@ def irisfirststgain():
     print("\n***Gain results of all dataset***")
     gain_sl=info_d-Info_sl_D
     print("Gain of sepal length is %5.3f"% gain_sl)
-    gain_sw=info_d-Info_pl_D
+    gain_sw=info_d-Info_sw_D
     print("Gain of sepal width is %5.3f"% gain_sw)
-    gain_pl=info_d-Info_sw_D
+    gain_pl=info_d-Info_pl_D
     print("Gain of petal length is %5.3f"% gain_pl)
     gain_pw=info_d-Info_pw_D
     print("Gain of petal width is %5.3f"% gain_pw)
@@ -179,7 +179,7 @@ def irisfirststgain():
 
 
 def irissecondgain():
-    with open("preprocessed_iris.csv", "r") as f:
+    with open("SecondRound.csv", "r") as f:
         X = f.readlines()
 
     N = 3  # Number of classes
@@ -188,15 +188,15 @@ def irissecondgain():
     sl = np.zeros(N)
     slCI = np.zeros((N, M))
 
-    pl = np.zeros(N)
-    plCI = np.zeros((N, M))
+    sw = np.zeros(N)
+    swCI = np.zeros((N, M))
 
     pw = np.zeros(N)
     pwCI = np.zeros((N, M))
 
     classs = np.zeros(2)
     # Loop through the data to count occurrences
-    for i in range(50, 150):
+    for i in range(0, 74):
 
         # Sepal Length (sl)
         print(f"Processing line {i}: {X[i]}")
@@ -214,19 +214,15 @@ def irissecondgain():
             slCI[2][1] += 1 if "Iris-virginica" in X[i] else 0
 
 
-        # Petal Length (pl)
-        if X[i].count("pl_s") == 1:
-            pl[0] += 1
-            plCI[0][0] += 1 if "Iris-versicolor" in X[i] else 0
-            plCI[0][1] += 1 if "Iris-virginica" in X[i] else 0
-        elif X[i].count("pl_m") == 1:
-            pl[1] += 1
-            plCI[1][0] += 1 if "Iris-versicolor" in X[i] else 0
-            plCI[1][1] += 1 if "Iris-virginica" in X[i] else 0
-        elif X[i].count("pl_l") == 1:
-            pl[2] += 1
-            plCI[2][0] += 1 if "Iris-versicolor" in X[i] else 0
-            plCI[2][1] += 1 if "Iris-virginica" in X[i] else 0
+        # Petal Length (sw)
+        if X[i].count("sw_s") == 1:
+            sw[0] += 1
+            swCI[0][0] += 1 if "Iris-versicolor" in X[i] else 0
+            swCI[0][1] += 1 if "Iris-virginica" in X[i] else 0
+        elif X[i].count("sw_m") == 1:
+            sw[1] += 1
+            swCI[1][0] += 1 if "Iris-versicolor" in X[i] else 0
+            swCI[1][1] += 1 if "Iris-virginica" in X[i] else 0
 
         # Petal Width (pw)
         if X[i].count("pw_s") == 1:
@@ -258,24 +254,27 @@ def irissecondgain():
 
     for i in range(3):
         slCI[i][2] = calculate_entropy([slCI[i][0], slCI[i][1]])
-        plCI[i][2] = calculate_entropy([plCI[i][0], plCI[i][1]])
+        swCI[i][2] = calculate_entropy([swCI[i][0], swCI[i][1]])
         pwCI[i][2] = calculate_entropy([pwCI[i][0], pwCI[i][1]])
 
     # Calculate information gain for each attribute
     Info_sl_D = inforD(sl, [slCI[0][2], slCI[1][2], slCI[2][2]])
-    Info_pl_D = inforD(pl, [plCI[0][2], plCI[1][2], plCI[2][2]])
+    Info_sw_D = inforD(sw, [swCI[0][2], swCI[1][2], swCI[2][2]])
     Info_pw_D = inforD(pw, [pwCI[0][2], pwCI[1][2], pwCI[2][2]])
 
+    print(swCI[0][2])
+    print(swCI[1][2])
+    print(swCI[2][2])
     # Calculate information gain for each attribute
 
     print()
     print("sl count is",sl)
-    print("pl count is",pl)
+    print("pl count is",sw)
     print("pw count is",pw)
     print("Iris count is",classs)
     print()
     print("sl Info relate to class",slCI)
-    print("pl Info relate to class",plCI)
+    print("pl Info relate to class",swCI)
     print("pw Info relate to class",pwCI)
     print()
     print("Info(D) is %5.3f" % info_d)
@@ -283,22 +282,22 @@ def irissecondgain():
     print("Info(sl (mean+-2sd) is %5.3f" % slCI[1][2])
     print("Info(sl (> mean + SD) is %5.3f" % slCI[2][2])
     print()
-    print("Info(pl (< mean - SD) is %5.3f" % plCI[0][2])
-    print("Info(pl (mean+-2sd) is %5.3f" % plCI[1][2])
-    print("Info(pl (> mean + SD) is %5.3f" % plCI[2][2])
+    print("Info(sw (< mean - SD) is %5.3f" % swCI[0][2])
+    print("Info(sw (mean+-2sd) is %5.3f" % swCI[1][2])
+    print("Info(sw (> mean + SD) is %5.3f" % swCI[2][2])
     print()
     print("Info(pw (< mean - SD) is %5.3f" % pwCI[0][2])
     print("Info(pw (mean+-2sd) is %5.3f" % pwCI[1][2])
     print("Info(pw (> mean + SD) is %5.3f" % pwCI[2][2])
     print()
     print("Info sl (D) is %5.3f" % Info_sl_D)
-    print("Info pl (D) is %5.3f" % Info_pl_D)
+    print("Info sw (D) is %5.3f" % Info_sw_D)
     print("Info pw (D) is %5.3f" % Info_pw_D)
     print()
     print("\n***Gain results of all dataset***")
     gain_sl=info_d-Info_sl_D
     print("Gain of sepal length is %5.3f"% gain_sl)
-    gain_sw=info_d-Info_pl_D
+    gain_sw=info_d-Info_sw_D
     print("Gain of sepal width is %5.3f"% gain_sw)
     gain_pw=info_d-Info_pw_D
     print("Gain of petal width is %5.3f"% gain_pw)
@@ -313,7 +312,7 @@ def irissecondgain():
 
 
 def iristhirdgain():
-    with open("preprocessed_iris.csv", "r") as f:
+    with open("ThirdRound.csv", "r") as f:
         X = f.readlines()
 
     N = 3  # Number of classes
@@ -327,7 +326,7 @@ def iristhirdgain():
 
     classs = np.zeros(2)
     # Loop through the data to count occurrences
-    for i in range(0, 150):
+    for i in range(0, 63):
 
         # Sepal Length (sl)
         print(f"Processing line {i}: {X[i]}")
@@ -398,9 +397,6 @@ def iristhirdgain():
     print("Info(sw (mean+-2sd) is %5.3f" % swCI[1][2])
     print("Info(sw (> mean + SD) is %5.3f" % swCI[2][2])
     print()
-    print("Info sl (D) is %5.3f" % Info_sl_D)
-    print("Info sw (D) is %5.3f" % Info_sw_D)
-    print()
     print("\n***Gain results of all dataset***")
     gain_sl=info_d-Info_sl_D
     print("Gain of sepal length is %5.3f"% gain_sl)
@@ -417,33 +413,33 @@ def iristhirdgain():
 
 
 def irisfourthgain():
-    with open("preprocessed_iris.csv", "r") as f:
+    with open("FourthRound.csv", "r") as f:
         X = f.readlines()
 
     N = 3  # Number of classes
     M = 3  # Number of attributes
 
-    sl = np.zeros(N)
-    slCI = np.zeros((N, M))
+    sw = np.zeros(N)
+    swCI = np.zeros((N, M))
 
     classs = np.zeros(2)
     # Loop through the data to count occurrences
-    for i in range(0, 150):
+    for i in range(0, 63):
 
         # Sepal Length (sl)
         print(f"Processing line {i}: {X[i]}")
-        if X[i].count("sl_s") == 1:
-            sl[0] += 1
-            slCI[0][0] += 1 if "Iris-versicolor" in X[i] else 0
-            slCI[0][1] += 1 if "Iris-virginica" in X[i] else 0
-        elif X[i].count("sl_m") == 1:
-            sl[1] += 1
-            slCI[1][0] += 1 if "Iris-versicolor" in X[i] else 0
-            slCI[1][1] += 1 if "Iris-virginica" in X[i] else 0
-        elif X[i].count("sl_l") == 1:
-            sl[2] += 1
-            slCI[2][0] += 1 if "Iris-versicolor" in X[i] else 0
-            slCI[2][1] += 1 if "Iris-virginica" in X[i] else 0
+        if X[i].count("sw_s") == 1:
+            sw[0] += 1
+            swCI[0][0] += 1 if "Iris-versicolor" in X[i] else 0
+            swCI[0][1] += 1 if "Iris-virginica" in X[i] else 0
+        elif X[i].count("sw_m") == 1:
+            sw[1] += 1
+            swCI[1][0] += 1 if "Iris-versicolor" in X[i] else 0
+            swCI[1][1] += 1 if "Iris-virginica" in X[i] else 0
+        elif X[i].count("sw_l") == 1:
+            sw[2] += 1
+            swCI[2][0] += 1 if "Iris-versicolor" in X[i] else 0
+            swCI[2][1] += 1 if "Iris-virginica" in X[i] else 0
 
 
         # Class of iris (classs)
@@ -459,33 +455,33 @@ def irisfourthgain():
     print("Entropy of 1st Dataset = " , info_d)
 
     for i in range(3):
-        slCI[i][2] = calculate_entropy([slCI[i][0], slCI[i][1]])
+        swCI[i][2] = calculate_entropy([swCI[i][0], swCI[i][1]])
 
     # Calculate information gain for each attribute
-    Info_sl_D = inforD(sl, [slCI[0][2], slCI[1][2], slCI[2][2]])
+    Info_sw_D = inforD(sw, [swCI[0][2], swCI[1][2], swCI[2][2]])
 
     # Calculate information gain for each attribute
 
     print()
-    print("sl count is",sl)
+    print("sw count is",sw)
     print("Iris count is",classs)
     print()
-    print("sl Info relate to class",slCI)
+    print("sw Info relate to class",swCI)
     print()
     print("Info(D) is %5.3f" % info_d)
-    print("Info(sl (< mean - SD) is %5.3f" % slCI[0][2])
-    print("Info(sl (mean+-2sd) is %5.3f" % slCI[1][2])
-    print("Info(sl (> mean + SD) is %5.3f" % slCI[2][2])
+    print("Info(sw (< mean - SD) is %5.3f" % swCI[0][2])
+    print("Info(sw (mean+-2sd) is %5.3f" % swCI[1][2])
+    print("Info(sw (> mean + SD) is %5.3f" % swCI[2][2])
     print()
-    print("Info sl (D) is %5.3f" % Info_sl_D)
+    print("Info sw (D) is %5.3f" % Info_sw_D)
     print()
     print("\n***Gain results of all dataset***")
-    gain_sl=info_d-Info_sl_D
-    print("Gain of sepal length is %5.3f"% gain_sl)
+    gain_sw=info_d-Info_sw_D
+    print("Gain of sepal length is %5.3f"% gain_sw)
 
     #rule of root node
 
-    Result_All=[gain_sl]
+    Result_All=[gain_sw]
     print(Result_All)
     max_gain=max(Result_All)
     pos=np.argmax(Result_All)
