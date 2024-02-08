@@ -1,8 +1,10 @@
 from iris import *
 from classification import *
 
-# irisfirststgain()
-# irissecondgain()
-# iristhirdgain()
+irisfirststgain()
+irissecondgain()
+iristhirdgain()
 irisfourthgain()
-# classification()
+classification()
+
+

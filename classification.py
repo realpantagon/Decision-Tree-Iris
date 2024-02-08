@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def classification():
     f = open("preprocessed_iris.csv", "r")
     x = f.readlines()
@@ -46,3 +45,5 @@ def classification():
     print(iris_type)
     print(true_false)
     print(f"Accuracy value = {true_false[0]/sum(true_false)}")
+
+
